@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from django.db.models import Q
 from django.contrib.sites.models import Site
@@ -48,7 +49,7 @@ class PageQuerySet(PublisherQuerySet):
             return self.exclude(id__in=exclude_list)
 
     def published(self, site=None):
-        pub = self.on_site().filter(published=True)
+        pub = self.on_site(site).filter(published=True)
 
         if settings.CMS_SHOW_START_DATE:
             pub = pub.filter(

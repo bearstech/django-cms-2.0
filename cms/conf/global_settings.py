@@ -64,6 +64,9 @@ CMS_HIDE_UNTRANSLATED = True
 #Fall back to another language if the requested page isn't available in the preferred language
 CMS_LANGUAGE_FALLBACK = True
 
+#If no language available for a page, use site default
+CMS_LANGUAGE_FALLBACK_INPLACE = False
+
 #Configuration on how to order the fallbacks for languages.
 # example: {'de': ['en', 'fr'],
 #           'en': ['de'],

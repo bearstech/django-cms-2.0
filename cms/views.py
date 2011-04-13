@@ -40,20 +40,27 @@ def details(request, slug):
     # Since the "old" details view had an exception for the root page, it is
     # ported here. So no resolution if the slug is ''.
     if (current_language not in available_languages):
+        inplace = False
         if settings.CMS_LANGUAGE_FALLBACK:
             # If we didn't find the required page in the requested (current) 
             # language, let's try to find a suitable fallback in the list of 
             # fallback languages (CMS_LANGUAGE_CONF)
             for alt_lang in get_fallback_languages(current_language):
                 if alt_lang in available_languages:
-                    alt_url = page.get_absolute_url(language=alt_lang, fallback=True)
-                    path = '/%s%s' % (alt_lang, alt_url)
-                    # In the case where the page is not available in the
-                    # preferred language, *redirect* to the fallback page. This
-                    # is a design decision (instead of rendering in place)).
-                    return HttpResponseRedirect(path)
+                    if settings.CMS_LANGUAGE_INPLACE:
+                        # Don't redirect if we want the page inplace
+                        inplace = True
+                        current_language = alt_lang
+                    else:
+                        alt_url = page.get_absolute_url(language=alt_lang, fallback=True)
+                        path = '/%s%s' % (alt_lang, alt_url)
+                        # In the case where the page is not available in the
+                        # preferred language, *redirect* to the fallback page. This
+                        # is a design decision (instead of rendering in place)).
+                        return HttpResponseRedirect(path)
         # There is a page object we can't find a proper language to render it 
-        _handle_no_page(request, slug)
+        if not inplace:
+            _handle_no_page(request, slug)
 
     if apphook_pool.get_apphooks():
         # There are apphooks in the pool. Let's see if there is one for the
